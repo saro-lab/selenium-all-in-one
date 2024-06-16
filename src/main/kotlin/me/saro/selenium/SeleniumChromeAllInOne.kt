@@ -4,7 +4,8 @@ import me.saro.selenium.comm.*
 import java.io.File
 
 class SeleniumChromeAllInOne private constructor(
-    private val options: SeleniumChromeOptions
+    private val chromeBinPath: String,
+    private val options: Set<String>
 ) {
     companion object {
         private var created = false
@@ -17,7 +18,7 @@ class SeleniumChromeAllInOne private constructor(
             if (chromeDownloadOption == ChromeDownloadOption.JUST_MAJOR_VERSION_CHECK_OR_THROW) {
                 throw RuntimeException("your ChromeDownloadOption is JUST_MAJOR_VERSION_CHECK_OR_THROW, change your ChromeDownloadOption")
             }
-            ChromeLoader.create(saveFilePath, platform, chromeDownloadOption).load()
+            ChromeDownloader.create(saveFilePath, platform, chromeDownloadOption).handle()
         }
     }
 
@@ -96,15 +97,15 @@ class SeleniumChromeAllInOne private constructor(
         }
 
         @Synchronized
-        fun build() {
+        fun build(): SeleniumChromeAllInOne {
             if (created) {
                 throw RuntimeException("SeleniumAllInOne is already created.\nIt is a singleton object.")
             }
+            val loader = ChromeDownloader.create(path, Utils.getPlatform(), chromeDownloadOption).handle()
             systemProperties.forEach(System::setProperty)
-            val loader = ChromeLoader.create(path, Utils.getPlatform(), chromeDownloadOption)
-            loader.load()
+            System.setProperty("webdriver.chrome.driver", loader.chromedriverBinPath.canonicalPath)
             created = true
-            //return SeleniumChromeAllInOne(null)
+            return SeleniumChromeAllInOne(loader.chromeBinPath.canonicalPath, chromeOptions.toSet())
         }
     }
 }
