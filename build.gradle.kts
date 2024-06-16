@@ -57,6 +57,9 @@ dependencies {
     // selenium
     api("org.seleniumhq.selenium:selenium-java:$seleniumVersion")
 
+    // jackson
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
+
     // test
     testImplementation("org.junit.jupiter:junit-jupiter-api:+")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:+")

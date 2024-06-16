@@ -10,14 +10,14 @@ class SeleniumChromeAllInOne private constructor(
         private var created = false
 
         @JvmStatic
-        fun builder(path: File): Builder = Builder(File(path.canonicalPath))
+        fun builder(saveFilePath: File): Builder = Builder(File(saveFilePath.canonicalPath))
 
         @JvmStatic
-        fun download(path: File, platform: Platform, chromeDownloadOption: ChromeDownloadOption) {
+        fun download(saveFilePath: File, platform: Platform, chromeDownloadOption: ChromeDownloadOption) {
             if (chromeDownloadOption == ChromeDownloadOption.JUST_MAJOR_VERSION_CHECK_OR_THROW) {
                 throw RuntimeException("your ChromeDownloadOption is JUST_MAJOR_VERSION_CHECK_OR_THROW, change your ChromeDownloadOption")
             }
-            ChromeLoader(path, chromeDownloadOption).load(platform)
+            ChromeLoader.create(saveFilePath, platform, chromeDownloadOption).load()
         }
     }
 
@@ -101,9 +101,8 @@ class SeleniumChromeAllInOne private constructor(
                 throw RuntimeException("SeleniumAllInOne is already created.\nIt is a singleton object.")
             }
             systemProperties.forEach(System::setProperty)
-            //var chromeVersionPath = ChromeLoader(path, chromeDownloadOption).load()
-
-
+            val loader = ChromeLoader.create(path, Utils.getPlatform(), chromeDownloadOption)
+            loader.load()
             created = true
             //return SeleniumChromeAllInOne(null)
         }
