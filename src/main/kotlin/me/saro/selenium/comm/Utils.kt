@@ -17,5 +17,25 @@ class Utils {
                     level = Level.ALL
                     consoleHandler.level = Level.ALL
                 }
+
+        fun getPlatform(): Platform {
+            val os = System.getProperty("os.name").lowercase()
+            val arch = System.getProperty("os.arch").lowercase()
+            if (!arch.contains("64")) {
+                throw RuntimeException("not supported $os / $arch")
+            }
+            return when {
+                os.contains("linux") -> Platform.LINUX_64
+                os.contains("windows") -> Platform.WINDOWS_64
+                os.contains("mac") -> {
+                    if (arch.contains("aarch64")) {
+                        Platform.MAC_ARM64
+                    } else {
+                        Platform.MAC_X64
+                    }
+                }
+                else -> throw RuntimeException("not supported $os / $arch")
+            }
+        }
     }
 }

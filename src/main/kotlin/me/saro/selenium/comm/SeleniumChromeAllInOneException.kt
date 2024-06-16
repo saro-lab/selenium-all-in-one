@@ -1,6 +1,6 @@
 package me.saro.selenium.comm
 
-class SeleniumAioException(
+class SeleniumChromeAllInOneException(
     override val message: String,
     override val cause: Throwable? = null
 ): RuntimeException() {

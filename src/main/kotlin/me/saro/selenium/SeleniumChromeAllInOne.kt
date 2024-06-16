@@ -1,18 +1,24 @@
 package me.saro.selenium
 
-import me.saro.selenium.comm.ChromeDownloadOption
-import me.saro.selenium.comm.SeleniumAioOptions
-import me.saro.selenium.comm.Utils
+import me.saro.selenium.comm.*
 import java.io.File
 
-class SeleniumAllInOne private constructor(
-    private val options: SeleniumAioOptions
+class SeleniumChromeAllInOne private constructor(
+    private val options: SeleniumChromeOptions
 ) {
     companion object {
         private var created = false
 
         @JvmStatic
-        fun builder(path: File): Builder = Builder(path)
+        fun builder(path: File): Builder = Builder(File(path.canonicalPath))
+
+        @JvmStatic
+        fun download(path: File, platform: Platform, chromeDownloadOption: ChromeDownloadOption) {
+            if (chromeDownloadOption == ChromeDownloadOption.JUST_MAJOR_VERSION_CHECK_OR_THROW) {
+                throw RuntimeException("your ChromeDownloadOption is JUST_MAJOR_VERSION_CHECK_OR_THROW, change your ChromeDownloadOption")
+            }
+            ChromeLoader(path, chromeDownloadOption).load(platform)
+        }
     }
 
     class Builder(
@@ -90,12 +96,16 @@ class SeleniumAllInOne private constructor(
         }
 
         @Synchronized
-        fun build(): SeleniumAllInOne {
+        fun build() {
             if (created) {
                 throw RuntimeException("SeleniumAllInOne is already created.\nIt is a singleton object.")
             }
+            systemProperties.forEach(System::setProperty)
+            //var chromeVersionPath = ChromeLoader(path, chromeDownloadOption).load()
+
+
             created = true
-            return SeleniumAllInOne(SeleniumAioOptions(path, chromeDownloadOption, chromeOptions.toSet(), systemProperties.toMap()))
+            //return SeleniumChromeAllInOne(null)
         }
     }
 }
