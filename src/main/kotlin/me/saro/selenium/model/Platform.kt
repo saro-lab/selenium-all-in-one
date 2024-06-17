@@ -1,4 +1,4 @@
-package me.saro.selenium.comm
+package me.saro.selenium.model
 
 enum class Platform(val value: String) {
     LINUX_64("linux64"),

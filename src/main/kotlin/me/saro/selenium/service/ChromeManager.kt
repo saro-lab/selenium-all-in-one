@@ -1,17 +1,21 @@
-package me.saro.selenium.comm
+package me.saro.selenium.service
 
+import me.saro.selenium.comm.Utils
+import me.saro.selenium.model.ChromeDownloadOption
+import me.saro.selenium.model.Platform
+import me.saro.selenium.model.SeleniumChromeAllInOneException
 import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.util.*
 
-class ChromeDownloader(
+class ChromeManager(
     private val platform: String,
     private val platformRoot: File,
     private val binaryFileExt: String,
     private val downloadOption: ChromeDownloadOption,
 ) {
-    private val log = Utils.getLogger(ChromeDownloader::class)
+    private val log = Utils.getLogger(ChromeManager::class)
     private val chromeDownloadUri: String
     private var chromeVersionPath: String
     private val chromeVersion: String
@@ -21,10 +25,10 @@ class ChromeDownloader(
     private val existsBinaries: Boolean get() = (!chromeVersionPath.endsWith('-')&& chromedriverBinPath.exists()&& chromeBinPath.exists())
     val chromeRoot: File get() = File(platformRoot, chromeVersionPath)
 
-    fun handle(): ChromeDownloader {
+    fun handle(): ChromeManager {
         // check major version
-        val existsBinaries = this.existsBinaries
-        if (existsBinaries) {
+        val haveMajorVersionBinaries = this.existsBinaries
+        if (haveMajorVersionBinaries) {
             if (downloadOption != ChromeDownloadOption.IF_MINOR_VERSIONS_DIFFER_DOWNLOAD) {
                 log.info("chrome $chromeVersion exists and check completed")
                 return this
@@ -34,17 +38,20 @@ class ChromeDownloader(
         }
         try {
             // download info
-            val info = ChromeDownloadInfo(URI(chromeDownloadUri), platform, chromeVersion)
+            val milestone = Utils.readJson(URI(chromeDownloadUri)).at("/milestones/$chromeVersion")
+            val revision = milestone.path("revision").asText()
+            val chromeDriverUri = milestone.at("/downloads/chromedriver").first { it.path("platform").asText() == platform }.path("url").asText()
+            val chromeUri = milestone.at("/downloads/chrome").first { it.path("platform").asText() == platform }.path("url").asText()
             // check minor version
-            if (existsBinaries && chromeRevision == info.revision) {
+            if (haveMajorVersionBinaries && chromeRevision == revision) {
                 log.info("chrome $chromeVersion.$chromeRevision exists and check completed")
                 return this
             }
-            chromeVersionPath = "chrome-$chromeVersion-${info.revision}"
+            chromeVersionPath = "chrome-$chromeVersion-${revision}"
             // not exists and download
             log.info("chrome $chromeVersion.$chromeRevision not exists and download ready")
-            downloadAndUnzip(info.chromeDriverUri, File(chromeRoot, "#chromedriver.zip"))
-            downloadAndUnzip(info.chromeUri, File(chromeRoot, "#chrome.zip"))
+            downloadAndUnzip(chromeDriverUri, File(chromeRoot, "#chromedriver.zip"))
+            downloadAndUnzip(chromeUri, File(chromeRoot, "#chrome.zip"))
             if (this.existsBinaries) {
                 log.info("Chrome $chromeVersion.$chromeRevision ready completed")
             } else {
@@ -95,7 +102,7 @@ class ChromeDownloader(
     }
 
     companion object {
-        fun create(root: File, platform: Platform, downloadOption: ChromeDownloadOption): ChromeDownloader {
+        fun create(root: File, platform: Platform, downloadOption: ChromeDownloadOption): ChromeManager {
             val platformRoot = File(root.canonicalPath, platform.value)
             if (!platformRoot.exists()) {
                 platformRoot.mkdirs()
@@ -106,7 +113,7 @@ class ChromeDownloader(
                 Platform.WINDOWS_64 -> ".exe"
                 else -> ""
             }
-            return ChromeDownloader(platform.value, platformRoot, binaryFileExt, downloadOption)
+            return ChromeManager(platform.value, platformRoot, binaryFileExt, downloadOption)
         }
     }
 }

@@ -1,4 +1,4 @@
-package me.saro.selenium.comm
+package me.saro.selenium.model
 
 enum class ChromeDownloadOption {
     // just major version check or throw

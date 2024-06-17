@@ -1,6 +1,9 @@
 package me.saro.selenium
 
 import me.saro.selenium.comm.*
+import me.saro.selenium.model.ChromeDownloadOption
+import me.saro.selenium.model.Platform
+import me.saro.selenium.service.ChromeManager
 import java.io.File
 
 class SeleniumChromeAllInOne private constructor(
@@ -18,7 +21,7 @@ class SeleniumChromeAllInOne private constructor(
             if (chromeDownloadOption == ChromeDownloadOption.JUST_MAJOR_VERSION_CHECK_OR_THROW) {
                 throw RuntimeException("your ChromeDownloadOption is JUST_MAJOR_VERSION_CHECK_OR_THROW, change your ChromeDownloadOption")
             }
-            ChromeDownloader.create(saveFilePath, platform, chromeDownloadOption).handle()
+            ChromeManager.create(saveFilePath, platform, chromeDownloadOption).handle()
         }
     }
 
@@ -35,23 +38,13 @@ class SeleniumChromeAllInOne private constructor(
             return this
         }
 
-        fun systemProperty(key: String, value: String?): Builder {
-            assert (key.isNotBlank()) { "key is blank" }
-            when (key) {
-                "webdriver.chrome.driver" ->
-                    throw IllegalArgumentException("$key is not allowed to change the value.")
-            }
-            if (value != null) {
-                systemProperties[key] = value
-            } else {
-                systemProperties.remove(key)
-            }
-            return this
-        }
-
         fun chromeOption(option: String): Builder {
             assert (option.isNotBlank()) { "option is blank" }
-            removeChromeOptionTree(option)
+            val lof = option.lastIndexOf('=')
+            if (lof != -1) {
+                val key = option.substring(0, lof)
+                chromeOptions.removeIf { it.startsWith(key) }
+            }
             when (option) {
                 "--headless" -> log.warning("It is not recommended for users to change the value of webdriver.chrome.driver.")
             }
@@ -59,7 +52,7 @@ class SeleniumChromeAllInOne private constructor(
             return this
         }
 
-        fun enableRecommendChromeOptions(): Builder =
+        fun enableRecommendChromeOptions(disabledSecurity: Boolean): Builder {
             chromeOption("--user-data-dir=" + System.getProperty("java.io.tmpdir")) // Prevents socket errors.
                 .chromeOption("--disable-infobars") // Disables browser information bar.
                 .chromeOption("--disable-dev-shm-usage") // Ignores the limit on temporary disk space for the browser.
@@ -67,26 +60,12 @@ class SeleniumChromeAllInOne private constructor(
                 .chromeOption("--disable-extensions")
                 .chromeOption("--disable-popup-blocking")
                 .chromeOption("--disable-gpu")
-
-
-        fun disabledSecurityOptions(): Builder =
-            systemProperty("webdriver.chrome.whitelistedIps", "")
-                .chromeOption("--no-sandbox")
-                .chromeOption("--ignore-certificate-errors")
-
-        fun removeChromeOption(option: String): Builder {
-            assert (option.isNotBlank()) { "option is blank" }
-            removeChromeOptionTree(option)
-            chromeOptions.remove(option)
-            return this
-        }
-
-        private fun removeChromeOptionTree(option: String) {
-            val lof = option.lastIndexOf('=')
-            if (lof != -1) {
-                val key = option.substring(0, lof)
-                chromeOptions.removeIf { it.startsWith(key) }
+            if (disabledSecurity) {
+                systemProperties["webdriver.chrome.whitelistedIps"] = ""
+                chromeOption("--no-sandbox")
+                    .chromeOption("--ignore-certificate-errors")
             }
+            return this
         }
 
         private fun print() {
@@ -101,7 +80,7 @@ class SeleniumChromeAllInOne private constructor(
             if (created) {
                 throw RuntimeException("SeleniumAllInOne is already created.\nIt is a singleton object.")
             }
-            val loader = ChromeDownloader.create(path, Utils.getPlatform(), chromeDownloadOption).handle()
+            val loader = ChromeManager.create(path, Utils.getPlatform(), chromeDownloadOption).handle()
             systemProperties.forEach(System::setProperty)
             System.setProperty("webdriver.chrome.driver", loader.chromedriverBinPath.canonicalPath)
             created = true

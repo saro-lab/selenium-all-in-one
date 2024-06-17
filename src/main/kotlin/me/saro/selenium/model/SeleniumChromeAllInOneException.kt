@@ -1,4 +1,4 @@
-package me.saro.selenium.comm
+package me.saro.selenium.model
 
 class SeleniumChromeAllInOneException(
     override val message: String,

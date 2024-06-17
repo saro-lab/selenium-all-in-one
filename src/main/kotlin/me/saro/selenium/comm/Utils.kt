@@ -1,6 +1,9 @@
 package me.saro.selenium.comm
 
+import com.fasterxml.jackson.module.kotlin.jsonMapper
+import me.saro.selenium.model.Platform
 import java.io.File
+import java.net.URI
 import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -8,6 +11,8 @@ import kotlin.reflect.KClass
 
 class Utils {
     companion object {
+        private var mapper = jsonMapper()
+
         fun <T : Any> getLogger(clazz: KClass<T>): Logger =
             Logger.getLogger(clazz.java.name)
 
@@ -30,6 +35,9 @@ class Utils {
                 else -> throw RuntimeException("not supported $os / $arch")
             }
         }
+
+        fun readJson(uri: URI) =
+            mapper.readTree(uri.toURL())
 
         fun unzip(zipFile: File, zipRootDepth: Int, destDir: File) =
             unzip(zipFile) {

@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.*
 
 /**
@@ -136,6 +137,13 @@ tasks.withType<Javadoc>().configureEach {
 configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+}
+
+kotlin {
+    compilerOptions {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+        //apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+    }
 }
 
 tasks.withType<Test> {
