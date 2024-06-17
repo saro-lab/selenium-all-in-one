@@ -11,8 +11,6 @@ import kotlin.reflect.KClass
 
 class Utils {
     companion object {
-        private var mapper = jsonMapper()
-
         fun <T : Any> getLogger(clazz: KClass<T>): Logger =
             Logger.getLogger(clazz.java.name)
 
@@ -35,9 +33,6 @@ class Utils {
                 else -> throw RuntimeException("not supported $os / $arch")
             }
         }
-
-        fun readJson(uri: URI) =
-            mapper.readTree(uri.toURL())
 
         fun unzip(zipFile: File, zipRootDepth: Int, destDir: File) =
             unzip(zipFile) {

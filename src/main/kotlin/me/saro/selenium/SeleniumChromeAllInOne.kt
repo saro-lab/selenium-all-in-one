@@ -1,15 +1,53 @@
 package me.saro.selenium
 
-import me.saro.selenium.comm.*
+import me.saro.selenium.comm.Utils
 import me.saro.selenium.model.ChromeDownloadOption
 import me.saro.selenium.model.Platform
 import me.saro.selenium.service.ChromeManager
+import me.saro.selenium.service.WebDriverPlus
+import org.openqa.selenium.Dimension
+import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeOptions
 import java.io.File
 
 class SeleniumChromeAllInOne private constructor(
     private val chromeBinPath: String,
     private val options: Set<String>
 ) {
+    val log = Utils.getLogger(SeleniumChromeAllInOne::class)
+
+    fun <T> openBackground(url: String, use: WebDriverPlus.() -> T): T =
+        openWith(url, setOf("--headless"), use)
+
+    fun <T> openBackground(url: String, addOption: Set<String>, use: WebDriverPlus.() -> T): T =
+        openWith(url, addOption + setOf("--headless"), use)
+
+    fun <T> openWith(url: String, use: WebDriverPlus.() -> T): T =
+        openWith(url, setOf(), use)
+
+    fun <T> openWith(url: String, addOption: Set<String>, use: WebDriverPlus.() -> T): T {
+        val driver = createCustom(createChromeOptions(addOption))
+        try {
+            return use(WebDriverPlus(driver).apply {
+                driver.manage().window().size = Dimension(2000, 3000)
+                move(url)
+            })
+        } finally {
+            try { driver.close() } catch (e: Exception) {}
+            try { driver.quit() } catch (e: Exception) {}
+            log.info("chrome driver closed.")
+        }
+    }
+
+    fun createCustom(chromeOptions: ChromeOptions): ChromeDriver =
+        ChromeDriver(chromeOptions.setBinary(chromeBinPath))
+
+    private fun createChromeOptions(addOption: Set<String>) =
+        ChromeOptions().apply {
+            options.forEach(::addArguments)
+            addOption.forEach(::addArguments)
+        }
+
     companion object {
         private var created = false
 

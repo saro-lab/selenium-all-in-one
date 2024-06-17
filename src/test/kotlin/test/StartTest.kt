@@ -20,6 +20,13 @@ class StartTest {
             .chromeDownloadOption(ChromeDownloadOption.IF_MINOR_VERSIONS_DIFFER_DOWNLOAD)
             .build()
 
+        sca.openBackground("https://anissia.net") {
+
+            driver.finds(".flex.items-center.py-3.my-1.border-b.border-gray-200.text-sm.anissia-home-reduce-10").forEach {
+                println(it.find("a").text)
+            }
+
+        }
 
     }
 }

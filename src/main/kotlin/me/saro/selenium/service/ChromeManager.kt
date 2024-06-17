@@ -1,5 +1,6 @@
 package me.saro.selenium.service
 
+import com.fasterxml.jackson.module.kotlin.jsonMapper
 import me.saro.selenium.comm.Utils
 import me.saro.selenium.model.ChromeDownloadOption
 import me.saro.selenium.model.Platform
@@ -30,7 +31,7 @@ class ChromeManager(
         val haveMajorVersionBinaries = this.existsBinaries
         if (haveMajorVersionBinaries) {
             if (downloadOption != ChromeDownloadOption.IF_MINOR_VERSIONS_DIFFER_DOWNLOAD) {
-                log.info("chrome $chromeVersion exists and check completed")
+                log.info("find chrome $chromeVersion - major version check completed")
                 return this
             }
         } else if (downloadOption == ChromeDownloadOption.JUST_MAJOR_VERSION_CHECK_OR_THROW) {
@@ -38,13 +39,13 @@ class ChromeManager(
         }
         try {
             // download info
-            val milestone = Utils.readJson(URI(chromeDownloadUri)).at("/milestones/$chromeVersion")
+            val milestone = jsonMapper().readTree(URI(chromeDownloadUri).toURL()).at("/milestones/$chromeVersion")
             val revision = milestone.path("revision").asText()
             val chromeDriverUri = milestone.at("/downloads/chromedriver").first { it.path("platform").asText() == platform }.path("url").asText()
             val chromeUri = milestone.at("/downloads/chrome").first { it.path("platform").asText() == platform }.path("url").asText()
             // check minor version
             if (haveMajorVersionBinaries && chromeRevision == revision) {
-                log.info("chrome $chromeVersion.$chromeRevision exists and check completed")
+                log.info("find chrome $chromeVersion.$chromeRevision full version check completed")
                 return this
             }
             chromeVersionPath = "chrome-$chromeVersion-${revision}"
