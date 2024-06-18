@@ -41,9 +41,8 @@ plugins {
 
 val properties = Properties()
 file("/src/main/resources/application.properties").inputStream().use { properties.load(it) }
-
 val seleniumVersion = properties["selenium.version"]
-val version = "$seleniumVersion.0"
+val allInOneVersion = "0"
 
 repositories {
     mavenCentral()
@@ -62,8 +61,8 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
 
     // test
-    testImplementation("org.junit.jupiter:junit-jupiter-api:+")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:+")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 }
 
 tasks.withType<Test> {
@@ -76,7 +75,7 @@ publishing {
 
             groupId = "me.saro"
             artifactId = "selenium-chrome-all-in-one"
-            version = version
+            version = "$seleniumVersion.$allInOneVersion"
 
             from(components["java"])
 
@@ -142,7 +141,6 @@ configure<JavaPluginExtension> {
 kotlin {
     compilerOptions {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-        //apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
     }
 }
 

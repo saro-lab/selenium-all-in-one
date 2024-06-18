@@ -58,7 +58,7 @@ class SeleniumChromeAllInOne private constructor(
         @JvmStatic
         fun download(manageChromePath: File, platform: Platform, downloadStrategy: DownloadStrategy) {
             if (downloadStrategy == DownloadStrategy.THROW_IF_NO_VERSION) {
-                throw RuntimeException("your ChromeDownloadOption is JUST_MAJOR_VERSION_CHECK_OR_THROW, change your ChromeDownloadOption")
+                throw RuntimeException("download failed: downloadStrategy is THROW_IF_NO_VERSION")
             }
             ChromeBinManager.load(PathManager.create(manageChromePath, platform), downloadStrategy)
         }
@@ -72,7 +72,7 @@ class SeleniumChromeAllInOne private constructor(
         private val systemProperties: MutableMap<String, String> = mutableMapOf()
         private val log = Utils.getLogger(Builder::class)
 
-        fun chromeDownloadOption(downloadStrategy: DownloadStrategy): Builder {
+        fun downloadStrategy(downloadStrategy: DownloadStrategy): Builder {
             this.downloadStrategy = downloadStrategy
             return this
         }

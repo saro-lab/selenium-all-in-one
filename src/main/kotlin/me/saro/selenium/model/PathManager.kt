@@ -1,6 +1,5 @@
 package me.saro.selenium.model
 
-import me.saro.selenium.comm.Utils
 import java.io.File
 
 class PathManager private constructor(
@@ -28,7 +27,7 @@ class PathManager private constructor(
     val existsBinaries: Boolean get() = chromeRoot.isNotEmpty() && File(chromedriverBinPath).exists() && File(chromeBinPath).exists()
 
     companion object {
-        fun create(root: File, platform: Platform = Utils.getPlatform()): PathManager {
+        fun create(root: File, platform: Platform = Platform.getPlatform()): PathManager {
             return PathManager(root.canonicalPath, platform)
         }
     }
