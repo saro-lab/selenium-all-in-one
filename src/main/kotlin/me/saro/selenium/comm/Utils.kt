@@ -1,9 +1,7 @@
 package me.saro.selenium.comm
 
-import com.fasterxml.jackson.module.kotlin.jsonMapper
 import me.saro.selenium.model.Platform
 import java.io.File
-import java.net.URI
 import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -43,9 +41,6 @@ class Utils {
                     null
                 }
             }
-
-        fun unzip(zipFile: File, destDir: File) =
-            unzip(zipFile) { File(destDir, it.name) }
 
         fun unzip(zipFile: File, eachSavePath: (ZipEntry) -> File?) =
             ZipFile(zipFile).use { zip -> zip.entries().asSequence().forEach { entry ->

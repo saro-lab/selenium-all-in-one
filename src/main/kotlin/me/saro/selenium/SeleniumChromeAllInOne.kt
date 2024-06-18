@@ -1,9 +1,10 @@
 package me.saro.selenium
 
 import me.saro.selenium.comm.Utils
-import me.saro.selenium.model.ChromeDownloadOption
+import me.saro.selenium.model.DownloadStrategy
+import me.saro.selenium.model.PathManager
 import me.saro.selenium.model.Platform
-import me.saro.selenium.service.ChromeManager
+import me.saro.selenium.service.ChromeBinManager
 import me.saro.selenium.service.WebDriverPlus
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeDriver
@@ -14,8 +15,6 @@ class SeleniumChromeAllInOne private constructor(
     private val chromeBinPath: String,
     private val options: Set<String>
 ) {
-    val log = Utils.getLogger(SeleniumChromeAllInOne::class)
-
     fun <T> openBackground(url: String, use: WebDriverPlus.() -> T): T =
         openWith(url, setOf("--headless"), use)
 
@@ -49,30 +48,32 @@ class SeleniumChromeAllInOne private constructor(
         }
 
     companion object {
+        private val log = Utils.getLogger(SeleniumChromeAllInOne::class)
+
         private var created = false
 
         @JvmStatic
-        fun builder(saveFilePath: File): Builder = Builder(File(saveFilePath.canonicalPath))
+        fun builder(manageChromePath: File): Builder = Builder(File(manageChromePath.canonicalPath))
 
         @JvmStatic
-        fun download(saveFilePath: File, platform: Platform, chromeDownloadOption: ChromeDownloadOption) {
-            if (chromeDownloadOption == ChromeDownloadOption.JUST_MAJOR_VERSION_CHECK_OR_THROW) {
+        fun download(manageChromePath: File, platform: Platform, downloadStrategy: DownloadStrategy) {
+            if (downloadStrategy == DownloadStrategy.THROW_IF_NO_VERSION) {
                 throw RuntimeException("your ChromeDownloadOption is JUST_MAJOR_VERSION_CHECK_OR_THROW, change your ChromeDownloadOption")
             }
-            ChromeManager.create(saveFilePath, platform, chromeDownloadOption).handle()
+            ChromeBinManager.load(PathManager.create(manageChromePath, platform), downloadStrategy)
         }
     }
 
     class Builder(
-        private val path: File,
+        private val manageChromePath: File,
     ) {
-        private var chromeDownloadOption: ChromeDownloadOption = ChromeDownloadOption.IF_MAJOR_VERSIONS_DIFFER_DOWNLOAD
+        private var downloadStrategy: DownloadStrategy = DownloadStrategy.DOWNLOAD_IF_NO_VERSION
         private val chromeOptions: MutableSet<String> = mutableSetOf()
         private val systemProperties: MutableMap<String, String> = mutableMapOf()
         private val log = Utils.getLogger(Builder::class)
 
-        fun chromeDownloadOption(chromeDownloadOption: ChromeDownloadOption): Builder {
-            this.chromeDownloadOption = chromeDownloadOption
+        fun chromeDownloadOption(downloadStrategy: DownloadStrategy): Builder {
+            this.downloadStrategy = downloadStrategy
             return this
         }
 
@@ -116,13 +117,14 @@ class SeleniumChromeAllInOne private constructor(
         @Synchronized
         fun build(): SeleniumChromeAllInOne {
             if (created) {
-                throw RuntimeException("SeleniumAllInOne is already created.\nIt is a singleton object.")
+                log.warning("SeleniumAllInOne is already created.\nIt is a singleton object.")
             }
-            val loader = ChromeManager.create(path, Utils.getPlatform(), chromeDownloadOption).handle()
+            val pathManager = PathManager.create(manageChromePath)
+            ChromeBinManager.load(pathManager, downloadStrategy)
             systemProperties.forEach(System::setProperty)
-            System.setProperty("webdriver.chrome.driver", loader.chromedriverBinPath.canonicalPath)
+            System.setProperty("webdriver.chrome.driver", pathManager.chromedriverBinPath)
             created = true
-            return SeleniumChromeAllInOne(loader.chromeBinPath.canonicalPath, chromeOptions.toSet())
+            return SeleniumChromeAllInOne(pathManager.chromeBinPath, chromeOptions.toSet())
         }
     }
 }

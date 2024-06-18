@@ -1,7 +1,7 @@
 package test
 
 import me.saro.selenium.SeleniumChromeAllInOne
-import me.saro.selenium.model.ChromeDownloadOption
+import me.saro.selenium.model.DownloadStrategy
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -17,7 +17,7 @@ class StartTest {
 
         var sca = SeleniumChromeAllInOne.builder(File("./tmp"))
             .enableRecommendChromeOptions(true)
-            .chromeDownloadOption(ChromeDownloadOption.IF_MINOR_VERSIONS_DIFFER_DOWNLOAD)
+            .chromeDownloadOption(DownloadStrategy.DOWNLOAD_IF_NO_VERSION_OR_DIFFERENT_REVISION)
             .build()
 
         sca.openBackground("https://anissia.net") {
