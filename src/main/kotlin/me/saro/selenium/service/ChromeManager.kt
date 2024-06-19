@@ -4,23 +4,23 @@ import me.saro.selenium.comm.Utils
 import me.saro.selenium.model.ChromeVersionDetails
 import me.saro.selenium.model.DownloadStrategy
 import me.saro.selenium.model.PathManager
-import me.saro.selenium.model.SeleniumChromeAllInOneException
+import me.saro.selenium.model.SeleniumChromeException
 import java.io.File
 import java.net.URI
 
-class ChromeBinManager {
+class ChromeManager {
     companion object {
-        private val log = Utils.getLogger(ChromeBinManager::class)
+        private val log = Utils.getLogger(ChromeManager::class)
 
         fun load(pathManager: PathManager, downloadStrategy: DownloadStrategy) {
-            log.info("ChromeBinManager.load(): downloadStrategy: $downloadStrategy")
+            log.info("ChromeManager.load(): downloadStrategy: $downloadStrategy")
             if (pathManager.existsBinaries) {
                 if (downloadStrategy == DownloadStrategy.DOWNLOAD_IF_NO_VERSION) {
                     log.info("find chrome binaries in ${pathManager.chromeRoot}")
                     return
                 }
             } else if (downloadStrategy == DownloadStrategy.THROW_IF_NO_VERSION) {
-                throw SeleniumChromeAllInOneException("cannot find chrome binaries in ${pathManager.chromeRoot}\nbut your downloadStrategy is ${DownloadStrategy.THROW_IF_NO_VERSION}")
+                throw SeleniumChromeException("cannot find chrome binaries in ${pathManager.chromeRoot}\nbut your downloadStrategy is ${DownloadStrategy.THROW_IF_NO_VERSION}")
             }
 
             val chromeVersionDetails = ChromeVersionDetails(pathManager.platform.value)
@@ -36,7 +36,7 @@ class ChromeBinManager {
             if (pathManager.existsBinaries) {
                 log.info("installed chrome binaries in ${pathManager.chromeRoot}")
             } else {
-                throw SeleniumChromeAllInOneException("download and unzip completed, but not found binaries in ${pathManager.chromeRoot}")
+                throw SeleniumChromeException("download and unzip completed, but not found binaries in ${pathManager.chromeRoot}")
             }
         }
 
@@ -47,8 +47,9 @@ class ChromeBinManager {
                 log.info("download $save done and unzip start...")
                 Utils.unzip(File(root, save), 1, File(root))
                 log.info("download $save done and unzip done")
+                File(root, save).delete()
             } catch (e: Exception) {
-                throw SeleniumChromeAllInOneException("failed to install chrome binaries", e)
+                throw SeleniumChromeException("failed to install chrome binaries", e)
             }
         }
     }

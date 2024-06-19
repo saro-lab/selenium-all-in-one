@@ -1,6 +1,6 @@
 package me.saro.selenium.model
 
-class SeleniumChromeAllInOneException(
+class SeleniumChromeException(
     override val message: String,
     override val cause: Throwable? = null
 ): RuntimeException() {

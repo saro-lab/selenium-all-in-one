@@ -13,7 +13,7 @@ Try the example below.
 ## Gradle
 
 ```
-compile 'me.saro:selenium-chrome-all-in-one:4.21.0.0'
+compile 'me.saro:selenium-chrome-all-in-one:4.21.0.1'
 ```
 
 ## Maven
@@ -22,30 +22,31 @@ compile 'me.saro:selenium-chrome-all-in-one:4.21.0.0'
 <dependency>
   <groupId>me.saro</groupId>
   <artifactId>selenium-chrome-all-in-one</artifactId>
-  <version>4.21.0.0</version>
+  <version>4.21.0.1</version>
 </dependency>
 ```
 
 ## Kotlin example
 ```kotlin
 // use example
-val chromeBinPath = "./chrome-bin"
+val chromeBinPath = File("./chrome-bin")
 
-val sca = SeleniumChromeAllInOne.builder(File(chromeBinPath))
-    // .downloadStrategy(DOWNLOAD_IF_NO_VERSION) default value
+val manager = ChromeDriverManager.builder(chromeBinPath)
+    .downloadStrategy(DOWNLOAD_IF_NO_VERSION) // default value
     .enableRecommendChromeOptions(true)
     .build()
 
-val list = sca.openBackground("https://anissia.net") {
-    driver.finds(".flex.items-center.py-3.my-1.border-b.border-gray-200.text-sm.anissia-home-reduce-10")
+val list = manager.openBackground("https://anissia.net") {
+    finds(".flex.items-center.py-3.my-1.border-b.border-gray-200.text-sm.anissia-home-reduce-10")
         .map { it.find("a").text }
 }
+
 list.forEach(::println)
 ```
 ```kotlin
 // just download
-val chromeBinPath = "./chrome-bin"
-download(File(chromeBinPath), getPlatform(), DOWNLOAD_IF_NO_VERSION)
+val chromeBinPath = File("./chrome-bin")
+ChromeDriverManager.download(chromeBinPath, getPlatform(), DOWNLOAD_IF_NO_VERSION)
 ```
 ```kotlin
 // with spring project
@@ -53,30 +54,24 @@ download(File(chromeBinPath), getPlatform(), DOWNLOAD_IF_NO_VERSION)
 @Configuration
 class SeleniumConfiguration {
     @Bean
-    fun getSelenium() =
-        SeleniumChromeAllInOne.builder(File("./chrome-bin"))
-            .enableRecommendChromeOptions(true)
-            .build()
+    fun getSelenium() = ChromeDriverManager.builder(File("./chrome-bin")).enableRecommendChromeOptions(true).build()
 }
 ```
 
 ## Java example
 ```java
 // use example
-String chromeBinPath = "./chrome-bin";
+String chromeBinPath = new File("./chrome-bin");
 
-var sca = SeleniumChromeAllInOne.builder(new File(chromeBinPath))
+ChromeDriverManager manager = ChromeDriverManager.builder(chromeBinPath)
         .enableRecommendChromeOptions(true)
         .build();
 
-var list = sca.openBackground("https://anissia.net", dp -> {
-    var driver = dp.getDriver();
-    var items = new ArrayList<>();
-
-    dp.finds(driver, ".flex.items-center.py-3.my-1.border-b.border-gray-200.text-sm.anissia-home-reduce-10").forEach(
+List<String> list = manager.openBackground("https://anissia.net", dp -> {
+    List<String> items = new ArrayList<>();
+    dp.finds(".flex.items-center.py-3.my-1.border-b.border-gray-200.text-sm.anissia-home-reduce-10").forEach(
             e -> items.add(dp.find(e, "a").getText())
     );
-
     return items;
 });
 
@@ -84,8 +79,8 @@ list.forEach(System.out::println);
 ```
 ```java
 // just download
-val chromeBinPath = "./chrome-bin"
-SeleniumChromeAllInOne.download(new File(chromeBinPath), Platform.getPlatform(), DownloadStrategy.DOWNLOAD_IF_NO_VERSION);
+String chromeBinPath = new File("./chrome-bin");
+SeleniumChromeAllInOne.download(chromeBinPath, Platform.getPlatform(), DownloadStrategy.DOWNLOAD_IF_NO_VERSION);
 ```
 
 ## Repository

@@ -8,17 +8,14 @@ import kotlin.reflect.KClass
 
 class Utils {
     companion object {
-        fun <T : Any> getLogger(clazz: KClass<T>): Logger =
-            Logger.getLogger(clazz.java.name)
+        fun <T : Any> getLogger(clazz: KClass<T>): Logger = Logger.getLogger(clazz.java.name)
 
         fun unzip(zipFile: File, zipRootDepth: Int, destDir: File) =
             unzip(zipFile) {
                 val paths = it.name.split("/")
                 if (paths.size > zipRootDepth) {
                     File(destDir, paths.drop(zipRootDepth).joinToString("/"))
-                } else {
-                    null
-                }
+                } else null
             }
 
         fun unzip(zipFile: File, eachSavePath: (ZipEntry) -> File?) =

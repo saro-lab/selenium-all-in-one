@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.*
 
 /**
@@ -34,15 +33,12 @@ import java.util.*
 plugins {
     val kotlinVersion = "2.0.0"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
-    id("org.jetbrains.kotlin.kapt") version kotlinVersion
     signing
     `maven-publish`
 }
 
-val properties = Properties()
-file("/src/main/resources/application.properties").inputStream().use { properties.load(it) }
-val seleniumVersion = properties["selenium.version"]
-val allInOneVersion = "0"
+val seleniumVersion = (Properties().apply { file("/src/main/resources/application.properties").inputStream().use { load(it) } })["selenium.version"]
+val allInOneVersion = "1"
 
 repositories {
     mavenCentral()
@@ -61,8 +57,8 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
 
     // test
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<Test> {
@@ -136,12 +132,6 @@ tasks.withType<Javadoc>().configureEach {
 configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
-}
-
-kotlin {
-    compilerOptions {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-    }
 }
 
 tasks.withType<Test> {
