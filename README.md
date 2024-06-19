@@ -83,6 +83,14 @@ String chromeBinPath = new File("./chrome-bin");
 SeleniumChromeAllInOne.download(chromeBinPath, Platform.getPlatform(), DownloadStrategy.DOWNLOAD_IF_NO_VERSION);
 ```
 
+# Version info
+- CDP: Chrome DevTools Protocol (Version)
+
+| Selenium All-in-One / CDP    | Selenium | Selenium Exact CDP | Selenium Support CDP |
+|------------------------------|----------|--------------------|----------------------|
+| 4.21.0.2 / 123 (not release) | 4.21.0   | 123                | 123 ~ 125            |
+| 4.21.0.1 / 125               | 4.21.0   | 123                | 123 ~ 125            |
+
 ## Repository
 - https://search.maven.org/artifact/me.saro/selenium-chrome-all-in-one
 - https://mvnrepository.com/artifact/me.saro/selenium-chrome-all-in-one
