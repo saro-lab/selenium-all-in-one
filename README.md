@@ -32,7 +32,7 @@ compile 'me.saro:selenium-chrome-all-in-one:4.21.0.1'
 val chromeBinPath = File("./chrome-bin")
 
 val manager = ChromeDriverManager.builder(chromeBinPath)
-    .downloadStrategy(DOWNLOAD_IF_NO_VERSION) // default value
+    //.downloadStrategy(DOWNLOAD_IF_NO_VERSION) // default value
     .enableRecommendChromeOptions(true)
     .build()
 
@@ -50,11 +50,23 @@ ChromeDriverManager.download(chromeBinPath, getPlatform(), DOWNLOAD_IF_NO_VERSIO
 ```
 ```kotlin
 // with spring project
-@EnableAutoConfiguration
 @Configuration
+@EnableAutoConfiguration
 class SeleniumConfiguration {
     @Bean
-    fun getSelenium() = ChromeDriverManager.builder(File("./chrome-bin")).enableRecommendChromeOptions(true).build()
+    fun getChromeDriverManager(): ChromeDriverManager =
+        ChromeDriverManager
+            .builder(File("./chrome-bin"))
+            .enableRecommendChromeOptions(true)
+            .build()
+}
+// use example
+@Service
+class ScrapTradeService(
+    private val chromeDriverManager: ChromeDriverManager,
+    private val tradingVolumeRepository: TradingVolumeRepository,
+): ScrapTrade {
+    ...
 }
 ```
 
@@ -84,7 +96,7 @@ SeleniumChromeAllInOne.download(chromeBinPath, Platform.getPlatform(), DownloadS
 ```
 
 # Version info
-- CDP: Chrome DevTools Protocol (Version)
+- CDP: Chrome DevTools Protocol (Version) == Chrome Browser Version
 
 | Selenium All-in-One / CDP    | Selenium | Selenium Exact CDP | Selenium Support CDP |
 |------------------------------|----------|--------------------|----------------------|
