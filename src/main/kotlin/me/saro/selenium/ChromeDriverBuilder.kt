@@ -11,6 +11,7 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import java.io.File
+import java.time.Duration
 
 class ChromeDriverBuilder(
     private val manageChromePath: File,
@@ -82,7 +83,10 @@ class ChromeDriverBuilder(
             val driver = newChromeDriver(createChromeOptions(addOption))
             try {
                 return use(ChromeDriverPlus(driver).apply {
-                    driver.manage().window().size = Dimension(2000, 3000)
+                    windowSize(2000, 3000)
+                    val duration =  Duration.ofSeconds(20)
+                    implicitWaitTimeout = duration
+                    pageLoadTimeout = duration
                     move(url)
                 })
             } finally {

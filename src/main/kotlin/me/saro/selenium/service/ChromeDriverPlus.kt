@@ -26,7 +26,6 @@ class ChromeDriverPlus(
     fun move(url: String) {
         log.info("connect to $url")
         driver.get(url)
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20))
     }
     fun scrollDown(size: Int) {
         script("window.scrollBy(0, $size)")
@@ -37,6 +36,10 @@ class ChromeDriverPlus(
     fun script(script: String): Any? = (driver as JavascriptExecutor).executeScript(script)
     fun sleep(millis: Long) = Thread.sleep(millis)
 
+    fun windowSize(width: Int, height: Int) {
+        driver.manage().window().size = org.openqa.selenium.Dimension(width, height)
+    }
+
     fun find(css: String): WebElement = driver.findElement(By.cssSelector(css))
     fun finds(css: String): List<WebElement> = driver.findElements(By.cssSelector(css))
     fun findsNotWait(css: String): List<WebElement> = driver.findsNotWait(css)
@@ -44,15 +47,40 @@ class ChromeDriverPlus(
 
     fun SearchContext.find(css: String): WebElement = this.findElement(By.cssSelector(css))
     fun SearchContext.finds(css: String): List<WebElement> = this.findElements(By.cssSelector(css))
-    fun SearchContext.findsNotWait(css: String): List<WebElement> {
-        val before = driver.manage().timeouts().implicitWaitTimeout
-        driver.manage().timeouts().implicitlyWait(Duration.ZERO)
-        val list = this.finds(css)
-        driver.manage().timeouts().implicitlyWait(before)
-        return list
+    fun SearchContext.findsNotWait(css: String): List<WebElement> = inImplicitWaitTimeout(Duration.ZERO) { this.finds(css) }
+    fun SearchContext.hasElementsNotWait(css: String): Boolean = findsNotWait(css).isNotEmpty()
+
+
+    var implicitWaitTimeout: Duration
+        get() = driver.manage().timeouts().implicitWaitTimeout
+        set(value) { driver.manage().timeouts().implicitlyWait(value) }
+
+    var pageLoadTimeout: Duration
+        get() = driver.manage().timeouts().pageLoadTimeout
+        set(value) { driver.manage().timeouts().pageLoadTimeout(value) }
+
+    fun <T> inImplicitWaitTimeout(duration: Duration, run: () -> T): T {
+        val before = implicitWaitTimeout
+        try {
+            implicitWaitTimeout = duration
+            return run()
+        } catch (e : Exception) {
+            throw e
+        } finally {
+            implicitWaitTimeout = before
+        }
     }
-    fun SearchContext.hasElementsNotWait(css: String): Boolean {
-        return findsNotWait(css).isNotEmpty()
+
+    fun <T> inPageLoadTimeout(duration: Duration, run: () -> T): T {
+        val before = pageLoadTimeout
+        try {
+            pageLoadTimeout = duration
+            return run()
+        } catch (e : Exception) {
+            throw e
+        } finally {
+            pageLoadTimeout = before
+        }
     }
 
     init {

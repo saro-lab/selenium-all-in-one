@@ -38,7 +38,7 @@ plugins {
 }
 
 val seleniumVersion = (Properties().apply { file("/src/main/resources/application.properties").inputStream().use { load(it) } })["selenium.version"]
-val allInOneVersion = "1"
+val allInOneVersion = "2"
 
 repositories {
     mavenCentral()
