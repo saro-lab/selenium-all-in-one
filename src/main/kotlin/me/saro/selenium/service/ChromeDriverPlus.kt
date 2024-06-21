@@ -13,16 +13,6 @@ class ChromeDriverPlus(
 ) {
     private val log = Utils.getLogger(ChromeDriverPlus::class)
 
-    fun <T> use(url: String, use: ChromeDriverPlus.() -> T): T {
-        try {
-            return use(this.apply { move(url) })
-        } finally {
-            try { driver.close() } catch (e: Exception) {}
-            try { driver.quit() } catch (e: Exception) {}
-            log.info("chrome driver closed.")
-        }
-    }
-
     fun move(url: String) {
         log.info("connect to $url")
         driver.get(url)

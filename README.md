@@ -158,94 +158,89 @@ temp
 </details>
 
 ## class ChromeDriverPlus
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">var implicitWaitTimeout: Duration</summary>
 
-temp
+- same as `ChromeDriver.manage().timeouts().implicitlyWait`
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">var pageLoadTimeout: Duration</summary>
 
-temp
+- same as `ChromeDriver.manage().timeouts().pageLoadTimeout`
 </details>
 
-<details open>
-<summary style="font-size: 14px; font-weight: bold">fun <T> use(url: String, use: ChromeDriverPlus.() -> T): T</summary>
-
-temp
-</details>
-
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun move(url: String)</summary>
 
-temp
+- move to the url
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun scrollDown(size: Int)</summary>
 
-temp
+- scroll down by the specified size.
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun scrollDown()</summary>
 
-temp
+- scroll down to the bottom of the page
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun script(script: String): Any?</summary>
 
-temp
+- same as `JavascriptExecutor.executeScript`
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun sleep(millis: Long)</summary>
 
-temp
+- same as `Thread.sleep`
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun windowSize(width: Int, height: Int)</summary>
 
-temp
+- same as `ChromeDriver.manage().window().size`
 </details>
 
-<details open>
-<summary style="font-size: 14px; font-weight: bold">fun find(css: String): WebElement = driver.findElement(By.cssSelector(css))</summary>
+<details>
+<summary style="font-size: 14px; font-weight: bold">fun find(css: String): WebElement</summary>
 
-temp
+- same as `SearchContext.findElement`
 </details>
 
-<details open>
-<summary style="font-size: 14px; font-weight: bold">fun finds(css: String): List<WebElement> = driver.findElements(By.cssSelector(css))</summary>
+<details>
+<summary style="font-size: 14px; font-weight: bold">fun finds(css: String): List<WebElement></summary>
 
-temp
+- same as `SearchContext.findElements`
 </details>
 
-<details open>
-<summary style="font-size: 14px; font-weight: bold">fun findsNotWait(css: String): List<WebElement> = driver.findsNotWait(css)</summary>
+<details>
+<summary style="font-size: 14px; font-weight: bold">fun findsNotWait(css: String): List<WebElement></summary>
 
-temp
+- `finds()` without waiting
 </details>
 
-<details open>
-<summary style="font-size: 14px; font-weight: bold">fun hasElementsNotWait(css: String): Boolean = driver.hasElementsNotWait(css)</summary>
+<details>
+<summary style="font-size: 14px; font-weight: bold">fun hasElementsNotWait(css: String): Boolean</summary>
 
-temp
+- find exist element without waiting
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun <T> inImplicitWaitTimeout(duration: Duration, run: () -> T): T</summary>
 
-temp
+- run in implicit wait timeout
 </details>
 
-<details open>
+<details>
+
 <summary style="font-size: 14px; font-weight: bold">fun <T> inPageLoadTimeout(duration: Duration, run: () -> T): T</summary>
 
-temp
+- run in page load timeout
 </details>
 
 
