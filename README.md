@@ -1,4 +1,4 @@
-# Selenium All-in-One
+# Selenium Chrome All-in-One
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.saro/selenium-chrome-all-in-one/badge.svg)](https://maven-badges.herokuapp.com/maven-central/me.saro/selenium-chrome-all-in-one)
 [![GitHub license](https://img.shields.io/github/license/saro-lab/selenium-chrome-all-in-one.svg)](https://github.com/saro-lab/selenium-chrome-all-in-one/blob/master/LICENSE)
 
@@ -120,6 +120,7 @@ SeleniumChromeAllInOne.download(chromeBinPath, Platform.getPlatform(), DownloadS
 - `downloadStrategy`
     - `DownloadStrategy.THROW_IF_NO_VERSION`
         - Throws an error if the version does not exist.
+          - For example, in a server environment where the firewall is blocking, you can set `DownloadStrategy.THROW_IF_NO_VERSION` and configure the usage environment by placing the downloaded file in a folder through `ChromeDriverManager.download()`.
     - `DownloadStrategy.DOWNLOAD_IF_NO_VERSION`
         - Downloads if the version does not exist.
     - `DownloadStrategy.DOWNLOAD_IF_NO_VERSION_OR_DIFFERENT_REVISION`
@@ -127,34 +128,35 @@ SeleniumChromeAllInOne.download(chromeBinPath, Platform.getPlatform(), DownloadS
 </details>
 
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun <T> openBackground(url: String, use: ChromeDriverPlus.() -> T): T </summary>
 
-temp
+- Open the `ChromeDriverPlus` in the background.
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun <T> openBackground(url: String, addOption: Set<String>, use: ChromeDriverPlus.() -> T): T </summary>
 
-temp
+- Open the `ChromeDriverPlus` in the background.
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun <T> openWith(url: String, use: ChromeDriverPlus.() -> T): T </summary>
 
-temp
+- Open the `ChromeDriverPlus`
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun <T> openWith(url: String, addOption: Set<String>, use: ChromeDriverPlus.() -> T): T </summary>
 
-temp
+- Open the `ChromeDriverPlus`
 </details>
 
-<details open>
+<details>
 <summary style="font-size: 14px; font-weight: bold">fun newChromeDriver(chromeOptions: ChromeOptions): ChromeDriver </summary>
 
-temp
+- Open the `ChromeDriver` raw.
+- Since `ChromeDriver` does not support auto close unlike `ChromeDriverPlus`, you need to manually release the resources.
 </details>
 
 ## class ChromeDriverPlus
